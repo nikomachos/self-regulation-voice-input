@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Когда я сильно волнуюсь</title>
+  <style>
+    :root {
+      --card: #ffffff;
+      --text: #24324a;
+      --muted: #66738f;
+      --primary: #5d7cff;
+      --primary-soft: #dfe6ff;
+      --accent: #ffd166;
+      --accent-soft: #fff2c2;
+      --ok-soft: #dff7ec;
+      --warn-soft: #ffe5e5;
+      --shadow: 0 10px 30px rgba(43, 61, 110, 0.12);
+      --radius: 24px;
+      --bg1: #eef3ff;
+      --bg2: #f8fbff;
+      --green: #34b36b;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .app {
+      width: min(100%, 760px);
+      padding-bottom: 40px;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn .28s ease;
+    }
+
+    .screen.active { display: block; }
+
+    .home-header {
+      background: var(--card);
+      border-radius: 28px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .mini-topbar {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      margin-bottom: 12px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .mini-topbar .left {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 38px);
+      line-height: 1.08;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .menu-btn, .btn {
+      border: none;
+      border-radius: 22px;
+      padding: 16px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .12s ease, box-shadow .2s ease, opacity .2s ease;
+      box-shadow: 0 6px 18px rgba(93,124,255,0.15);
+    }
+
+    .menu-btn:active, .btn:active { transform: scale(0.98); }
+
+    .menu-btn {
+      text-align: center;
+      background: linear-gradient(180deg, #ffffff 0%, #f7f9ff 100%);
+      color: var(--text);
+      min-height: 106px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      border: 2px solid transparent;
+      width: 100%;
+    }
+
+    .menu-btn .emoji { font-size: 30px; }
+    .menu-btn .label { font-size: 22px; }
+
+    .btn.primary { background: var(--primary); color: white; }
+    .btn.soft { background: var(--primary-soft); color: var(--text); }
+    .btn.accent { background: var(--accent-soft); color: #755300; }
+    .btn.ok { background: var(--ok-soft); color: #14593c; }
+    .btn.warn { background: var(--warn-soft); color: #8a2e2e; }
+    .btn.ghost { background: #f3f5fb; color: var(--text); box-shadow: none; }
+    .btn.small { padding: 10px 14px; font-size: 15px; border-radius: 16px; }
+    .btn.recording { background: #ffe5e5; color: #8a2e2e; }
+
+    .chip {
+      background: var(--primary-soft);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .row > * { flex: 1 1 0; }
+
+    .section-title {
+      margin: 0 0 8px;
+      font-size: 25px;
+    }
+
+    .section-text {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 16px;
+    }
+
+    .home-help { margin-top: 28px; }
+
+    .footer-credit {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      margin-top: 20px;
+      padding: 0 8px;
+    }
+
+    .pill-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff8de;
+      color: #6e5b08;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .mode-btn {
+      border: 2px solid transparent;
+      border-radius: 18px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 800;
+      background: #f7f9ff;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .mode-btn.active {
+      background: var(--primary-soft);
+      border-color: #9bb0ff;
+    }
+
+    .mode-sub {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .breathing-wrap {
+      display: grid;
+      place-items: center;
+      gap: 16px;
+      padding: 16px 14px 12px;
+      width: 100%;
+    }
+
+    .breathing-layout {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(220px, 320px);
+      align-items: center;
+      gap: 18px;
+      padding: 6px 8px 0;
+    }
+
+    .person-panel {
+      position: relative;
+      min-height: 300px;
+      display: grid;
+      place-items: center;
+    }
+
+    .instruction-panel {
+      position: relative;
+      min-height: 300px;
+      display: grid;
+      place-items: center;
+    }
+
+    .breath-halo {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(191,209,255,0.65) 0%, rgba(191,209,255,0.16) 55%, rgba(191,209,255,0) 75%);
+      transform: scale(0.85);
+      transition: transform linear;
+      z-index: 0;
+    }
+
+    .breathing-core {
+      width: min(76vw, 280px);
+      height: min(76vw, 280px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #ffffff 0%, #ebf1ff 58%, #d7e3ff 100%);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 16px;
+      position: relative;
+      z-index: 1;
+      box-shadow: inset 0 0 0 12px rgba(255,255,255,.7), 0 18px 35px rgba(93,124,255,0.22);
+      transform: scale(0.86);
+      transition: transform linear;
+    }
+
+    .phase { font-size: 28px; font-weight: 800; }
+    .count { font-size: 42px; font-weight: 900; }
+    .small { color: var(--muted); font-size: 14px; }
+
+    .breathing-illustration {
+      position: relative;
+      width: min(100%, 290px);
+      height: 280px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .face {
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      transform: translateX(-50%);
+      width: 180px;
+      height: 130px;
+      z-index: 2;
+    }
+
+    .head {
+      position: absolute;
+      inset: 0;
+      background: #ffe8cf;
+      border-radius: 70px 70px 58px 58px;
+      box-shadow: inset 0 -8px 0 rgba(0,0,0,0.03);
+    }
+
+    .hair {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      top: -4px;
+      height: 40px;
+      background: #5f4a44;
+      border-radius: 34px 34px 14px 14px;
+    }
+
+    .eye {
+      position: absolute;
+      top: 56px;
+      width: 12px;
+      height: 12px;
+      background: #24324a;
+      border-radius: 50%;
+    }
+
+    .eye.left { left: 54px; }
+    .eye.right { right: 54px; }
+
+    .nose {
+      position: absolute;
+      left: 50%;
+      top: 58px;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 20px;
+      border-radius: 10px;
+      background: rgba(214, 154, 120, 0.45);
+    }
+
+    .nostril-air {
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      width: 120px;
+      height: 70px;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity .25s ease;
+    }
+
+    .nostril-air::before,
+    .nostril-air::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      width: 34px;
+      height: 60px;
+      border: 4px solid #7fa5ff;
+      border-color: #7fa5ff transparent transparent transparent;
+      border-radius: 50%;
+      animation: noseFloat 1s ease-in-out infinite;
+    }
+
+    .nostril-air::before { left: 20px; transform: rotate(8deg); }
+    .nostril-air::after { right: 20px; transform: rotate(-8deg); }
+
+    .mouth {
+      position: absolute;
+      left: 50%;
+      top: 88px;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 16px;
+      border-radius: 0 0 18px 18px;
+      border-bottom: 4px solid #a45e59;
+      transition: all .25s ease;
+      background: transparent;
+    }
+
+    .mouth.pursed {
+      width: 18px;
+      height: 18px;
+      border: 4px solid #a45e59;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .mouth-air {
+      position: absolute;
+      left: 50%;
+      top: 78px;
+      width: 160px;
+      height: 54px;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity .25s ease;
+    }
+
+    .mouth-air::before,
+    .mouth-air::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 12px;
+      width: 62px;
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(127,165,255,0.55);
+      filter: blur(1px);
+      transform-origin: left center;
+      animation: mouthFlow 1.1s linear infinite;
+    }
+
+    .mouth-air::before { transform: translateX(-10px) scaleX(0.45); }
+    .mouth-air::after { transform: translateX(6px) scaleX(0.45); top: 24px; width: 84px; animation-delay: .2s; }
+
+    .breath-arrow-vertical {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 110px;
+      opacity: 0;
+      transition: opacity .25s ease;
+      z-index: 1;
+      filter: drop-shadow(0 0 3px rgba(127,165,255,0.35));
+    }
+
+    .breath-arrow-vertical.in,
+    .breath-arrow-vertical.out {
+      top: 146px;
+    }
+
+    .breath-arrow-vertical .shaft {
+      position: absolute;
+      left: 10px;
+      top: 16px;
+      bottom: 16px;
+      width: 8px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(127,165,255,0.18) 0%, rgba(127,165,255,0.95) 100%);
+    }
+
+    .breath-arrow-vertical .head {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-bottom: 18px solid #7fa5ff;
+    }
+
+    .breath-arrow-vertical.out .shaft {
+      background: linear-gradient(180deg, rgba(127,165,255,0.95) 0%, rgba(127,165,255,0.18) 100%);
+    }
+
+    .breath-arrow-vertical.out .head {
+      top: auto;
+      bottom: 0;
+      border-bottom: none;
+      border-top: 18px solid #7fa5ff;
+    }
+
+    .breathing-illustration.inhale .nostril-air { opacity: 1; }
+    .breathing-illustration.inhale .breath-arrow-vertical.in { opacity: 1; }
+    .breathing-illustration.exhale .mouth-air { opacity: 1; }
+    .breathing-illustration.exhale .breath-arrow-vertical.out { opacity: 1; }
+
+    .range-wrap { padding: 8px 4px; }
+    .slider-wrap { margin-top: 8px; }
+
+    .speed-range {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      height: 12px;
+      border-radius: 999px;
+      outline: none;
+      background: linear-gradient(to right, var(--primary) 0%, var(--primary) var(--fill, 50%), #e7edf9 var(--fill, 50%), #e7edf9 100%);
+    }
+
+    .speed-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid var(--primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      cursor: pointer;
+    }
+
+    .speed-range::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid var(--primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      cursor: pointer;
+    }
+
+    .speed-range::-moz-range-track {
+      height: 12px;
+      border-radius: 999px;
+      background: #e7edf9;
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      padding: 0 2px;
+    }
+
+    .progress-block {
+      width: 100%;
+      display: grid;
+      gap: 12px;
+      padding: 0 10px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 6px;
+      padding: 0 2px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 14px;
+      background: #edf1fb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #8aa1ff 0%, #5d7cff 100%);
+      transition: width .2s linear, background .2s linear;
+      border-radius: 999px;
+    }
+
+    .cycle-fill.inhale {
+      background: linear-gradient(90deg, #8aa1ff 0%, #5d7cff 100%);
+    }
+
+    .cycle-fill.exhale {
+      background: linear-gradient(90deg, #73d6a0 0%, var(--green) 100%);
+    }
+
+    .step-progress {
+      height: 12px;
+      border-radius: 999px;
+      background: #edf1fb;
+      overflow: hidden;
+      margin: 12px 0 16px;
+    }
+
+    .step-progress > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #8aa1ff 0%, #5d7cff 100%);
+      transition: width .3s ease;
+    }
+
+    .prompt-box {
+      background: linear-gradient(180deg, #f6f9ff 0%, #eef3ff 100%);
+      border-radius: 22px;
+      padding: 16px;
+      margin: 12px 0;
+    }
+
+    .prompt-title { margin: 0 0 8px; font-size: 23px; }
+    .prompt-hint { margin: 0; color: var(--muted); line-height: 1.45; }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      border: 2px solid #dde5fb;
+      border-radius: 18px;
+      padding: 14px 16px;
+      font-size: 16px;
+      color: var(--text);
+      background: white;
+      resize: vertical;
+      min-height: 110px;
+      outline: none;
+    }
+
+    input[type="text"] { min-height: 0; }
+    textarea:focus, input[type="text"]:focus { border-color: #9cb0ff; }
+
+    .step-counter {
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .success {
+      text-align: center;
+      padding: 8px 0 4px;
+    }
+
+    .success .big { font-size: 54px; }
+
+    .voice-helper {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-top: 8px;
+    }
+
+    .relax-steps {
+      display: grid;
+      gap: 14px;
+    }
+
+    .relax-step { display: none; }
+    .relax-step.active { display: block; animation: fadeIn .2s ease; }
+
+    .relax-items {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .relax-item {
+      background: #f8faff;
+      border-radius: 18px;
+      padding: 14px;
+      border: 2px solid transparent;
+    }
+
+    .relax-item.done {
+      background: #eefaf4;
+      border-color: #bfe8d0;
+    }
+
+    .relax-item-head {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .relax-item-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .relax-item-text {
+      color: var(--muted);
+      line-height: 1.45;
+      margin-top: 8px;
+      font-size: 15px;
+    }
+
+    .timer-btn {
+      min-width: 122px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: none;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: none;
+    }
+
+    .timer-btn.idle { background: #eaf0ff; color: var(--text); }
+    .timer-btn.tension { background: var(--warn-soft); color: #8a2e2e; }
+    .timer-btn.release { background: var(--ok-soft); color: #14593c; }
+    .timer-btn.done { background: #eef7ff; color: #31518f; cursor: default; }
+
+    .relax-subnote {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes noseFloat {
+      0% { transform: translateY(12px) scale(0.95); opacity: .15; }
+      100% { transform: translateY(-8px) scale(1.08); opacity: .85; }
+    }
+
+    @keyframes mouthFlow {
+      0% { opacity: .1; }
+      100% { opacity: .85; }
+    }
+
+    @media (max-width: 640px) {
+      .home-header { padding: 18px; }
+      .card { padding: 16px; }
+      .title { font-size: 30px; }
+      .phase { font-size: 24px; }
+      .count { font-size: 38px; }
+
+      .breathing-layout {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .person-panel { min-height: 260px; order: 2; }
+      .instruction-panel { min-height: 260px; order: 1; }
+      .breathing-illustration { width: min(100%, 260px); height: 260px; }
+      .progress-block { padding: 0 2px; }
+      .mode-switch { grid-template-columns: 1fr; }
+
+      .relax-item-head {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .timer-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="screen active" id="homeScreen">
+      <div class="home-header">
+        <h1 class="title">Когда я сильно волнуюсь</h1>
+        <div class="row" style="margin-top:14px;">
+          <div class="chip" id="totalStarsChip">⭐ Звёзды: 0</div>
+          <div class="chip" id="micChip">🎤 Микрофон: не включён</div>
+          <button class="btn ghost small" id="enableMicBtn" style="flex:0 0 auto;">Разрешить микрофон</button>
+          <button class="btn ghost small" id="resetProgressBtn" style="flex:0 0 auto;">Сбросить прогресс</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <button class="menu-btn" data-screen="breathingScreen">
+          <div class="emoji">🌬️</div>
+          <div class="label">Дыхание 1:2</div>
+        </button>
+        <button class="menu-btn" data-screen="groundingScreen">
+          <div class="emoji">🖐️</div>
+          <div class="label">5-4-3-2-1</div>
+        </button>
+        <button class="menu-btn" data-screen="relaxScreen">
+          <div class="emoji">💪</div>
+          <div class="label">Мышечная релаксация</div>
+        </button>
+      </div>
+
+      <div class="card home-help">
+        <h2 class="section-title">Как пользоваться</h2>
+        <p class="section-text">Для голосового ввода достаточно один раз нажать «Разрешить микрофон». После этого приложение использует одно и то же разрешение на протяжении всего сеанса. Если нужно, можно всё равно печатать вручную.</p>
+      </div>
+
+      <div class="footer-credit">Автор: д-р Александр Статников, стажёр в области реабилитационной психологии, 2026</div>
+    </section>
+
+    <section class="screen" id="breathingScreen">
+      <div class="mini-topbar">
+        <div class="left">
+          <button class="btn ghost small" data-back>← Назад</button>
+          <div class="chip" id="breathingStarsChip">⭐ Звёзды: 0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Дыхание 1:2</h2>
+        <div class="mode-switch">
+          <button class="mode-btn active" id="modeCalmBtn" type="button">
+            1.5 минуты
+            <span class="mode-sub">Успокоиться • 1 звезда</span>
+          </button>
+          <button class="mode-btn" id="modeStressBtn" type="button">
+            3 минуты
+            <span class="mode-sub">Снять стресс • 2 звезды</span>
+          </button>
+        </div>
+
+        <p class="section-text" id="breathingDescription" style="margin-top:14px;">
+          Короткая версия помогает быстро замедлиться и чуть успокоиться. На вдох всегда 4 счёта, на выдох всегда 8 счётов.
+        </p>
+
+        <div class="pill-note" id="breathingRewardNote">🏅 Награда за эту версию — 1 звезда</div>
+      </div>
+
+      <div class="card breathing-wrap">
+        <div class="breathing-layout">
+          <div class="person-panel">
+            <div class="breathing-illustration inhale" id="breathingIllustration" aria-hidden="true">
+              <div class="breath-arrow-vertical in"><div class="shaft"></div><div class="head"></div></div>
+              <div class="breath-arrow-vertical out"><div class="shaft"></div><div class="head"></div></div>
+              <div class="face">
+                <div class="nostril-air"></div>
+                <div class="mouth-air"></div>
+                <div class="head"></div>
+                <div class="hair"></div>
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+                <div class="nose"></div>
+                <div class="mouth" id="mouthShape"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="instruction-panel">
+            <div class="breath-halo" id="breathHalo"></div>
+            <div class="breathing-core" id="breathingCore">
+              <div>
+                <div class="phase" id="phaseLabel">Готов?</div>
+                <div class="count" id="countLabel">—</div>
+                <div class="small" id="cycleLabel">Цикл: 0 / 1</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-block">
+          <div>
+            <div class="progress-label">
+              <span>Прогресс цикла</span>
+              <span id="cycleProgressText">0%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill cycle-fill inhale" id="cycleProgressFill"></div></div>
+          </div>
+
+          <div>
+            <div class="progress-label">
+              <span>Прогресс упражнения</span>
+              <span id="exerciseProgressText">0:00 / 1:30</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="exerciseProgressFill"></div></div>
+          </div>
+        </div>
+
+        <div class="row" style="width:100%; padding:0 10px;">
+          <button class="btn primary" id="breathingStartBtn">Начать</button>
+          <button class="btn soft" id="breathingPauseBtn">Пауза</button>
+          <button class="btn ghost" id="breathingResetBtn">Сброс</button>
+        </div>
+
+        <div class="card" style="width:100%; margin:0; background:#f8faff; box-shadow:none; padding-left:16px; padding-right:16px;">
+          <div class="range-wrap">
+            <label for="breathingSpeedRange"><strong>Скорость дыхания</strong>: <span id="perCountValue">1.00</span> сек на 1 счёт</label>
+            <div class="slider-wrap">
+              <input class="speed-range" type="range" id="breathingSpeedRange" min="0" max="100" step="1" value="50" />
+              <div class="slider-labels">
+                <span>медленно</span>
+                <span>быстро</span>
+              </div>
+            </div>
+            <p class="section-text" style="margin-top:8px;">Слева — медленнее, справа — быстрее. Диапазон от 1.5 секунды до 0.5 секунды на 1 счёт.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card success" id="breathingSuccess" style="display:none;">
+        <div class="big">😌</div>
+        <h2 class="section-title">Замечательно</h2>
+        <p class="section-text" id="breathingSuccessText">Если тебе стало хоть немного спокойнее - это прекрасное достижение! ⭐</p>
+      </div>
+    </section>
+
+    <section class="screen" id="groundingScreen">
+      <div class="mini-topbar">
+        <div class="left">
+          <button class="btn ghost small" data-back>← Назад</button>
+          <div class="chip" id="groundingStarsChip">⭐ Звёзды: 0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Упражнение 5-4-3-2-1</h2>
+        <p class="section-text">На каждом шаге приложение ждёт ответ. Можно печатать или использовать голосовой ввод через браузер.</p>
+        <div class="pill-note">🏅 За полное прохождение — 2 звезды</div>
+      </div>
+
+      <div class="card">
+        <div class="step-counter" id="groundingStepCounter">Шаг 1 из 9</div>
+        <div class="step-progress"><div id="groundingProgress"></div></div>
+
+        <div class="prompt-box">
+          <h3 class="prompt-title" id="groundingTitle"></h3>
+          <p class="prompt-hint" id="groundingHint"></p>
+        </div>
+
+        <textarea id="groundingAnswer" placeholder="Напиши или продиктуй ответ..."></textarea>
+
+        <div class="row" style="margin-top:12px;">
+          <button class="btn accent" id="groundingVoiceBtn">🎤 Сказать голосом</button>
+          <button class="btn primary" id="nextGroundingBtn">Дальше</button>
+          <button class="btn ghost" id="clearGroundingAnswerBtn">Очистить</button>
+        </div>
+
+        <p class="voice-helper" id="groundingVoiceHelper"></p>
+      </div>
+
+      <div class="card success" id="groundingSuccess" style="display:none;">
+        <div class="big">😌</div>
+        <h2 class="section-title">Замечательно</h2>
+        <p class="section-text">Если тебе стало немного спокойнее - это прекрасное достижение! ⭐⭐</p>
+        <div class="row" style="margin-top:12px;">
+          <button class="btn primary" id="restartGroundingBtn">Пройти ещё раз</button>
+          <button class="btn soft" id="reviewGroundingBtn">Посмотреть ответы</button>
+        </div>
+      </div>
+
+      <div class="card" id="groundingReview" style="display:none;"></div>
+    </section>
+
+    <section class="screen" id="relaxScreen">
+      <div class="mini-topbar">
+        <div class="left">
+          <button class="btn ghost small" data-back>← Назад</button>
+          <div class="chip" id="relaxStarsChip">⭐ Звёзды: 0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Мышечная релаксация</h2>
+        <div class="pill-note">🏅 За полное прохождение — 2 звезды</div>
+      </div>
+
+      <div class="card">
+        <div class="step-counter" id="relaxStepCounter">Шаг 1 из 4</div>
+        <div class="step-progress"><div id="relaxProgress"></div></div>
+
+        <div class="relax-steps">
+          <div class="relax-step active" id="relaxStep1">
+            <div class="prompt-box">
+              <h3 class="prompt-title">Какие сейчас ощущения в теле?</h3>
+              <p class="prompt-hint">Если сложно понять самому, ответь на вопросы: какие мышцы или части тела напряжены, какие расслаблены? Твое тело больше теплое или больше холодное? Тяжелое или лёгкое? Как бьётся сердце (медленно, быстро)? Как ты сейчас дышишь?</p>
+            </div>
+            <textarea id="relaxBeforeText" placeholder="Например: плечи напряжены, руки тёплые, сердце бьётся быстро..."></textarea>
+            <div class="row" style="margin-top:12px;">
+              <button class="btn accent" id="relaxBeforeVoiceBtn">🎤 Сказать голосом</button>
+              <button class="btn primary" id="relaxToStep2Btn">Дальше</button>
+            </div>
+            <p class="voice-helper" id="relaxBeforeVoiceHelper"></p>
+          </div>
+
+          <div class="relax-step" id="relaxStep2">
+            <div class="prompt-box">
+              <h3 class="prompt-title">Само упражнение</h3>
+              <p class="prompt-hint">Нажмите на нужный пункт. Сначала запустится красный таймер «Напряжение» на 10 секунд. После 5 секунд можно нажать на него и перейти к зелёному таймеру «Расслабление» на 20 секунд раньше. После 15 секунд расслабления пункт можно отметить выполненным, а после 20 секунд он отметится сам.</p>
+            </div>
+
+            <div class="relax-items" id="relaxItems"></div>
+
+            <div class="row" style="margin-top:12px;">
+              <button class="btn soft" id="relaxBackTo1Btn">Назад</button>
+              <button class="btn primary" id="relaxToStep3Btn" disabled>Дальше</button>
+            </div>
+          </div>
+
+          <div class="relax-step" id="relaxStep3">
+            <div class="prompt-box">
+              <h3 class="prompt-title">Какие сейчас ощущения в теле?</h3>
+              <p class="prompt-hint">Если сложно понять самому, ответь на вопросы: какие мышцы или части тела напряжены, какие расслаблены? Твое тело больше теплое или больше холодное? Тяжелое или лёгкое? Как бьётся сердце (медленно, быстро)? Как ты сейчас дышишь?</p>
+            </div>
+            <textarea id="relaxAfterText" placeholder="Например: плечи стали мягче, дышать легче..."></textarea>
+            <div class="row" style="margin-top:12px;">
+              <button class="btn accent" id="relaxAfterVoiceBtn">🎤 Сказать голосом</button>
+              <button class="btn soft" id="relaxBackTo2Btn">Назад</button>
+              <button class="btn primary" id="relaxToStep4Btn">Дальше</button>
+            </div>
+            <p class="voice-helper" id="relaxAfterVoiceHelper"></p>
+          </div>
+
+          <div class="relax-step" id="relaxStep4">
+            <div class="prompt-box">
+              <h3 class="prompt-title">Общая проверка настроения</h3>
+              <p class="prompt-hint">Напиши, какое у тебя сейчас настроение. Стало ли спокойнее, легче, приятнее или ничего не изменилось?</p>
+            </div>
+            <textarea id="relaxMoodText" placeholder="Например: сейчас спокойнее и чуть легче..."></textarea>
+            <div class="row" style="margin-top:12px;">
+              <button class="btn accent" id="relaxMoodVoiceBtn">🎤 Сказать голосом</button>
+              <button class="btn soft" id="relaxBackTo3Btn">Назад</button>
+              <button class="btn ok" id="relaxFinishBtn">Завершить упражнение</button>
+            </div>
+            <p class="voice-helper" id="relaxMoodVoiceHelper"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card success" id="relaxSuccess" style="display:none;">
+        <div class="big">😌</div>
+        <h2 class="section-title">Замечательно</h2>
+        <p class="section-text">Если тебе стало хоть немного спокойнее - это прекрасное достижение! ⭐⭐</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const screens = document.querySelectorAll('.screen');
+    const starChips = ['totalStarsChip','breathingStarsChip','groundingStarsChip','relaxStarsChip'];
+
+    const state = {
+      stars: Number(localStorage.getItem('sr_stars') || 0),
+      groundingAnswers: [],
+      relaxDone: JSON.parse(localStorage.getItem('sr_relaxDoneV2') || 'false')
+    };
+
+    function saveStars() {
+      localStorage.setItem('sr_stars', String(state.stars));
+      for (const id of starChips) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = `⭐ Звёзды: ${state.stars}`;
+      }
+    }
+
+    function addStars(n) {
+      state.stars += n;
+      saveStars();
+    }
+
+    saveStars();
+
+    function showScreen(id) {
+      screens.forEach(s => s.classList.toggle('active', s.id === id));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('[data-screen]').forEach(btn => {
+      btn.addEventListener('click', () => showScreen(btn.dataset.screen));
+    });
+
+    document.querySelectorAll('[data-back]').forEach(btn => {
+      btn.addEventListener('click', () => showScreen('homeScreen'));
+    });
+
+    document.getElementById('resetProgressBtn').addEventListener('click', () => {
+      if (!confirm('Сбросить звёзды и локальный прогресс?')) return;
+      localStorage.removeItem('sr_stars');
+      localStorage.removeItem('sr_relaxDoneV2');
+      state.stars = 0;
+      state.relaxDone = false;
+      saveStars();
+      resetRelaxFlow();
+      alert('Прогресс сброшен.');
+    });
+
+    const micChip = document.getElementById('micChip');
+    const enableMicBtn = document.getElementById('enableMicBtn');
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const voiceState = {
+      stream: null,
+      recognition: null,
+      supported: !!SpeechRecognition,
+      permissionGranted: false,
+      activeTextarea: null,
+      activeButton: null,
+      activeHelper: null,
+      manualStop: false,
+      silenceTimer: null,
+      pendingFinalTranscript: ''
+    };
+
+    function setMicChip(text) {
+      micChip.textContent = text;
+    }
+
+    async function ensureMicrophonePermission() {
+      if (voiceState.permissionGranted && voiceState.stream) return true;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setMicChip('🎤 Микрофон: недоступен');
+        return false;
+      }
+      try {
+        voiceState.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        voiceState.permissionGranted = true;
+        setMicChip('🎤 Микрофон: разрешён');
+        return true;
+      } catch (e) {
+        setMicChip('🎤 Микрофон: нет доступа');
+        return false;
+      }
+    }
+
+    function buildRecognition() {
+      if (!voiceState.supported) return null;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'ru-RU';
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+      recognition.continuous = true;
+      return recognition;
+    }
+
+    function clearVoiceSilenceTimer() {
+      if (voiceState.silenceTimer) {
+        clearTimeout(voiceState.silenceTimer);
+        voiceState.silenceTimer = null;
+      }
+    }
+
+    function appendVoiceText(textarea, text) {
+      const clean = (text || '').trim();
+      if (!clean) return;
+      textarea.value = textarea.value.trim() ? `${textarea.value.trim()} ${clean}` : clean;
+    }
+
+    function stopVoiceCapture() {
+      voiceState.manualStop = true;
+      clearVoiceSilenceTimer();
+      if (voiceState.recognition) {
+        try { voiceState.recognition.stop(); } catch (e) {}
+      }
+    }
+
+    function resetActiveVoiceUI() {
+      if (voiceState.activeButton) {
+        voiceState.activeButton.classList.remove('recording');
+        voiceState.activeButton.textContent = '🎤 Сказать голосом';
+      }
+    }
+
+    function finishVoiceSession() {
+      clearVoiceSilenceTimer();
+      resetActiveVoiceUI();
+      voiceState.activeTextarea = null;
+      voiceState.activeButton = null;
+      voiceState.activeHelper = null;
+      voiceState.pendingFinalTranscript = '';
+      voiceState.manualStop = false;
+    }
+
+    async function startVoiceCapture(textarea, button, helper) {
+      if (!voiceState.supported) {
+        helper.textContent = 'Этот браузер не поддерживает распознавание речи.';
+        return;
+      }
+
+      const ok = await ensureMicrophonePermission();
+      if (!ok) {
+        helper.textContent = 'Не удалось получить доступ к микрофону.';
+        return;
+      }
+
+      if (voiceState.recognition) stopVoiceCapture();
+
+      const recognition = buildRecognition();
+      voiceState.recognition = recognition;
+      voiceState.activeTextarea = textarea;
+      voiceState.activeButton = button;
+      voiceState.activeHelper = helper;
+      voiceState.pendingFinalTranscript = '';
+      voiceState.manualStop = false;
+
+      recognition.onstart = () => {
+        button.classList.add('recording');
+        button.textContent = '⏹ Остановить запись';
+        helper.textContent = 'Слушаю. Остановлюсь не раньше чем через 3 секунды после последнего слова.';
+      };
+
+      recognition.onresult = (event) => {
+        clearVoiceSilenceTimer();
+        let finalChunk = '';
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) finalChunk += ' ' + transcript;
+          else interim += ' ' + transcript;
+        }
+        if (finalChunk.trim()) {
+          appendVoiceText(textarea, finalChunk);
+          voiceState.pendingFinalTranscript = '';
+        }
+        if (interim.trim()) {
+          voiceState.pendingFinalTranscript = interim.trim();
+        }
+        voiceState.silenceTimer = setTimeout(() => {
+          stopVoiceCapture();
+        }, 3000);
+      };
+
+      recognition.onerror = (event) => {
+        resetActiveVoiceUI();
+        helper.textContent = `Не удалось завершить голосовой ввод (${event.error || 'ошибка'}).`;
+        finishVoiceSession();
+      };
+
+      recognition.onend = () => {
+        if (!voiceState.manualStop && voiceState.pendingFinalTranscript.trim()) {
+          appendVoiceText(textarea, voiceState.pendingFinalTranscript);
+        }
+        helper.textContent = 'Голосовой ввод завершён.';
+        finishVoiceSession();
+      };
+
+      try {
+        recognition.start();
+      } catch (e) {
+        helper.textContent = 'Не удалось запустить голосовой ввод.';
+        finishVoiceSession();
+      }
+    }
+
+    enableMicBtn.addEventListener('click', async () => {
+      if (!voiceState.supported) {
+        setMicChip('🎤 Микрофон: браузер без распознавания');
+        alert('Этот браузер не поддерживает распознавание речи через Web Speech API.');
+        return;
+      }
+      const ok = await ensureMicrophonePermission();
+      alert(ok ? 'Доступ к микрофону разрешён на этот сеанс.' : 'Не удалось получить доступ к микрофону.');
+    });
+
+    const breathHalo = document.getElementById('breathHalo');
+    const breathingCore = document.getElementById('breathingCore');
+    const phaseLabel = document.getElementById('phaseLabel');
+    const countLabel = document.getElementById('countLabel');
+    const cycleLabel = document.getElementById('cycleLabel');
+    const breathingSpeedRange = document.getElementById('breathingSpeedRange');
+    const perCountValue = document.getElementById('perCountValue');
+    const breathingStartBtn = document.getElementById('breathingStartBtn');
+    const breathingPauseBtn = document.getElementById('breathingPauseBtn');
+    const breathingResetBtn = document.getElementById('breathingResetBtn');
+    const cycleProgressFill = document.getElementById('cycleProgressFill');
+    const cycleProgressText = document.getElementById('cycleProgressText');
+    const exerciseProgressFill = document.getElementById('exerciseProgressFill');
+    const exerciseProgressText = document.getElementById('exerciseProgressText');
+    const breathingIllustration = document.getElementById('breathingIllustration');
+    const mouthShape = document.getElementById('mouthShape');
+    const modeCalmBtn = document.getElementById('modeCalmBtn');
+    const modeStressBtn = document.getElementById('modeStressBtn');
+    const breathingDescription = document.getElementById('breathingDescription');
+    const breathingRewardNote = document.getElementById('breathingRewardNote');
+    const breathingSuccess = document.getElementById('breathingSuccess');
+    const breathingSuccessText = document.getElementById('breathingSuccessText');
+
+    const breathingModes = {
+      calm: { seconds: 90, stars: 1, label: '1:30', description: 'Короткая версия помогает быстро замедлиться и чуть успокоиться. На вдох всегда 4 счёта, на выдох всегда 8 счётов.' },
+      stress: { seconds: 180, stars: 2, label: '3:00', description: 'Длинная версия помогает заметно снизить напряжение и снять стресс. На вдох всегда 4 счёта, на выдох всегда 8 счётов.' }
+    };
+
+    const INHALE_COUNTS = 4;
+    const EXHALE_COUNTS = 8;
+    let currentBreathingMode = 'calm';
+    let TOTAL_BREATHING_SECONDS = breathingModes[currentBreathingMode].seconds;
+    let breathingTimer = null;
+    let breathingRunning = false;
+    let breathingPhase = 'inhale';
+    let breathingPhaseRemaining = 0;
+    let breathingElapsed = 0;
+    let breathingCycles = 0;
+    let breathingAwarded = false;
+    let targetCycles = 0;
+
+    function getPerCountSeconds() {
+      const sliderValue = Number(breathingSpeedRange.value);
+      const seconds = 1.5 - (sliderValue / 100);
+      return Math.max(0.5, Math.min(1.5, seconds));
+    }
+    function getInhaleSeconds() { return INHALE_COUNTS * getPerCountSeconds(); }
+    function getExhaleSeconds() { return EXHALE_COUNTS * getPerCountSeconds(); }
+    function getCycleSeconds() { return getInhaleSeconds() + getExhaleSeconds(); }
+    function calculateTargetCycles() { return Math.max(1, Math.round(TOTAL_BREATHING_SECONDS / getCycleSeconds())); }
+    function formatTime(sec) { const whole = Math.max(0, Math.round(sec)); const m = Math.floor(whole / 60); const s = whole % 60; return `${m}:${String(s).padStart(2, '0')}`; }
+
+    function updateBreathingModeUI() {
+      modeCalmBtn.classList.toggle('active', currentBreathingMode === 'calm');
+      modeStressBtn.classList.toggle('active', currentBreathingMode === 'stress');
+      breathingDescription.textContent = breathingModes[currentBreathingMode].description;
+      breathingRewardNote.textContent = `🏅 Награда за эту версию — ${breathingModes[currentBreathingMode].stars} ${breathingModes[currentBreathingMode].stars === 1 ? 'звезда' : 'звезды'}`;
+      TOTAL_BREATHING_SECONDS = breathingModes[currentBreathingMode].seconds;
+      targetCycles = calculateTargetCycles();
+      updateBreathingSuccessText();
+      updateBreathingUI();
+    }
+
+    function updateBreathingSuccessText() {
+      breathingSuccessText.textContent = currentBreathingMode === 'calm'
+        ? 'Если тебе стало хоть немного спокойнее - это прекрасное достижение! ⭐'
+        : 'Если тебе стало хоть немного спокойнее - это прекрасное достижение! ⭐⭐';
+    }
+
+    function setBreathingMode(mode) { currentBreathingMode = mode; resetBreathing(); updateBreathingModeUI(); }
+
+    function updateSpeedRangeFill() {
+      const min = Number(breathingSpeedRange.min);
+      const max = Number(breathingSpeedRange.max);
+      const val = Number(breathingSpeedRange.value);
+      const percent = ((val - min) / (max - min)) * 100;
+      breathingSpeedRange.style.setProperty('--fill', `${percent}%`);
+    }
+
+    function updateBreathingSpeedLabel() {
+      perCountValue.textContent = getPerCountSeconds().toFixed(2);
+      targetCycles = calculateTargetCycles();
+      updateSpeedRangeFill();
+      updateBreathingUI();
+    }
+
+    function setIllustrationPhase() {
+      breathingIllustration.classList.toggle('inhale', breathingPhase === 'inhale');
+      breathingIllustration.classList.toggle('exhale', breathingPhase === 'exhale');
+      mouthShape.classList.toggle('pursed', breathingPhase === 'exhale');
+      cycleProgressFill.classList.toggle('inhale', breathingPhase === 'inhale');
+      cycleProgressFill.classList.toggle('exhale', breathingPhase === 'exhale');
+    }
+
+    function getCycleProgressPercent() {
+      const total = getCycleSeconds();
+      const elapsedInCycle = breathingPhase === 'inhale'
+        ? (getInhaleSeconds() - breathingPhaseRemaining)
+        : (getInhaleSeconds() + (getExhaleSeconds() - breathingPhaseRemaining));
+      return Math.max(0, Math.min(100, (elapsedInCycle / total) * 100));
+    }
+
+    function getDisplayedCount() {
+      if (breathingElapsed === 0 && !breathingRunning && breathingPhaseRemaining === 0) return '—';
+      const perCount = getPerCountSeconds();
+      const totalCounts = breathingPhase === 'inhale' ? INHALE_COUNTS : EXHALE_COUNTS;
+      const totalSeconds = totalCounts * perCount;
+      const remaining = breathingPhaseRemaining || totalSeconds;
+      const elapsedInPhase = Math.max(0, totalSeconds - remaining);
+      const currentCount = Math.min(totalCounts, Math.floor(elapsedInPhase / perCount) + 1);
+      return String(currentCount);
+    }
+
+    function updateBreathingUI() {
+      if (breathingElapsed === 0 && !breathingRunning && breathingPhaseRemaining === 0) {
+        phaseLabel.textContent = 'Готов?';
+        countLabel.textContent = '—';
+      } else {
+        phaseLabel.textContent = breathingPhase === 'inhale' ? 'Вдох носом' : 'Выдох губами';
+        countLabel.textContent = getDisplayedCount();
+      }
+      const cycleProgress = getCycleProgressPercent();
+      cycleProgressFill.style.width = `${cycleProgress}%`;
+      cycleProgressText.textContent = `${Math.round(cycleProgress)}%`;
+      const elapsedForBar = Math.min(breathingElapsed, TOTAL_BREATHING_SECONDS);
+      const exerciseProgress = (elapsedForBar / TOTAL_BREATHING_SECONDS) * 100;
+      exerciseProgressFill.style.width = `${exerciseProgress}%`;
+      exerciseProgressText.textContent = `${formatTime(elapsedForBar)} / ${breathingModes[currentBreathingMode].label}`;
+      cycleLabel.textContent = `Цикл: ${Math.min(breathingCycles, targetCycles)} / ${targetCycles}`;
+      breathHalo.style.transitionDuration = '0.5s';
+      breathingCore.style.transitionDuration = '0.5s';
+      if (breathingPhase === 'inhale') {
+        breathHalo.style.transform = 'scale(1.08)';
+        breathingCore.style.transform = 'scale(1)';
+      } else {
+        breathHalo.style.transform = 'scale(0.82)';
+        breathingCore.style.transform = 'scale(0.86)';
+      }
+      setIllustrationPhase();
+    }
+
+    function finishBreathing() {
+      clearTimeout(breathingTimer);
+      breathingRunning = false;
+      breathingElapsed = TOTAL_BREATHING_SECONDS;
+      updateBreathingUI();
+      phaseLabel.textContent = 'Готово';
+      countLabel.textContent = '✓';
+      if (!breathingAwarded) {
+        addStars(breathingModes[currentBreathingMode].stars);
+        breathingAwarded = true;
+      }
+      updateBreathingSuccessText();
+      breathingSuccess.style.display = 'block';
+      breathingSuccess.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function breathingTick() {
+      if (!breathingRunning) return;
+      breathingElapsed += getPerCountSeconds();
+      breathingPhaseRemaining -= getPerCountSeconds();
+      if (breathingPhaseRemaining <= 0) {
+        if (breathingPhase === 'inhale') {
+          breathingPhase = 'exhale';
+          breathingPhaseRemaining = getExhaleSeconds();
+        } else {
+          breathingPhase = 'inhale';
+          breathingPhaseRemaining = getInhaleSeconds();
+          breathingCycles += 1;
+        }
+      }
+      updateBreathingUI();
+      if (breathingElapsed >= TOTAL_BREATHING_SECONDS) { finishBreathing(); return; }
+      breathingTimer = setTimeout(breathingTick, getPerCountSeconds() * 1000);
+    }
+
+    function startBreathing() {
+      breathingSuccess.style.display = 'none';
+      if (breathingRunning) return;
+      breathingRunning = true;
+      if (breathingElapsed === 0 && breathingPhaseRemaining === 0) {
+        breathingPhase = 'inhale';
+        breathingPhaseRemaining = getInhaleSeconds();
+        updateBreathingUI();
+      }
+      breathingTimer = setTimeout(breathingTick, getPerCountSeconds() * 1000);
+    }
+
+    function pauseBreathing() { breathingRunning = false; clearTimeout(breathingTimer); }
+
+    function resetBreathing() {
+      pauseBreathing();
+      breathingPhase = 'inhale';
+      breathingPhaseRemaining = 0;
+      breathingCycles = 0;
+      breathingElapsed = 0;
+      breathingAwarded = false;
+      targetCycles = calculateTargetCycles();
+      breathHalo.style.transform = 'scale(0.85)';
+      breathingCore.style.transform = 'scale(0.86)';
+      breathingSuccess.style.display = 'none';
+      setIllustrationPhase();
+      updateBreathingUI();
+    }
+
+    breathingSpeedRange.addEventListener('input', updateBreathingSpeedLabel);
+    breathingStartBtn.addEventListener('click', startBreathing);
+    breathingPauseBtn.addEventListener('click', pauseBreathing);
+    breathingResetBtn.addEventListener('click', resetBreathing);
+    modeCalmBtn.addEventListener('click', () => setBreathingMode('calm'));
+    modeStressBtn.addEventListener('click', () => setBreathingMode('stress'));
+    updateBreathingSpeedLabel();
+    updateBreathingModeUI();
+    resetBreathing();
+
+    const groundingSteps = [
+      { title: 'Усесться удобно', hint: 'Напиши, что ты уже сел(а) удобно. Напиши, где твои ноги, как лежат руки.', placeholder: 'Например: «Я сижу на стуле, ноги на полу, руки на коленях»...' },
+      { title: 'Что сейчас происходит в теле?', hint: 'Если трудно сказать что-то, ответь на вопросы: какие мышцы или части тела напряжены, какие расслаблены? Твое тело больше теплое или больше холодное? Тяжелое или лёгкое? Как бьётся сердце (медленно, быстро)? Как ты сейчас дышишь?', placeholder: 'Например: «Плечи напряжены, руки тёплые, сердце бьётся быстро»...' },
+      { title: 'Назови 5 предметов, которые видишь', hint: 'Можно перечислить 5 вещей вокруг тебя.', placeholder: 'Например: стол, окно, чашка, лампа, рюкзак...' },
+      { title: 'Назови 4 звука, которые слышишь', hint: 'Можно назвать громкие и тихие звуки.', placeholder: 'Например: шум машины, тиканье, голос, кондиционер...' },
+      { title: 'Назови 3 предмета, которые можно потрогать', hint: 'Важно написать, какие они на ощупь: мягкий, шершавый, холодный, гладкий, колючий, тёплый, и так далее.', placeholder: 'Например: плед — мягкий, стол — твёрдый, кружка — гладкая...' },
+      { title: 'Назови 2 запаха, которые есть сейчас', hint: 'Даже очень слабые запахи подходят.', placeholder: 'Например: запах чая, запах мыла...' },
+      { title: 'Назови 1 предмет, который можно попробовать на вкус', hint: 'И напиши, какой у него вкус: сладкий, солёный, кислый, нейтральный и так далее.', placeholder: 'Например: вода — нейтральная, яблоко — сладко-кислое...' },
+      { title: 'Снова проверь, что происходит в теле', hint: 'Сравни с началом упражнения. Что изменилось?', placeholder: 'Например: «Дышать стало легче, плечи мягче»...' },
+      { title: 'Завершение', hint: 'Коротко напиши: стало ли хоть немного спокойнее?', placeholder: 'Например: «Да, чуть спокойнее»...' }
+    ];
+
+    let groundingIndex = 0;
+    const groundingStepCounter = document.getElementById('groundingStepCounter');
+    const groundingProgress = document.getElementById('groundingProgress');
+    const groundingTitle = document.getElementById('groundingTitle');
+    const groundingHint = document.getElementById('groundingHint');
+    const groundingAnswer = document.getElementById('groundingAnswer');
+    const nextGroundingBtn = document.getElementById('nextGroundingBtn');
+    const clearGroundingAnswerBtn = document.getElementById('clearGroundingAnswerBtn');
+    const groundingSuccess = document.getElementById('groundingSuccess');
+    const groundingReview = document.getElementById('groundingReview');
+    const restartGroundingBtn = document.getElementById('restartGroundingBtn');
+    const reviewGroundingBtn = document.getElementById('reviewGroundingBtn');
+    const groundingVoiceBtn = document.getElementById('groundingVoiceBtn');
+    const groundingVoiceHelper = document.getElementById('groundingVoiceHelper');
+
+    function renderGroundingStep() {
+      const step = groundingSteps[groundingIndex];
+      groundingStepCounter.textContent = `Шаг ${groundingIndex + 1} из ${groundingSteps.length}`;
+      groundingProgress.style.width = `${((groundingIndex + 1) / groundingSteps.length) * 100}%`;
+      groundingTitle.textContent = step.title;
+      groundingHint.textContent = step.hint;
+      groundingAnswer.placeholder = step.placeholder;
+      groundingAnswer.value = state.groundingAnswers[groundingIndex] || '';
+    }
+
+    function resetGrounding() {
+      groundingIndex = 0;
+      state.groundingAnswers = [];
+      groundingSuccess.style.display = 'none';
+      groundingReview.style.display = 'none';
+      groundingAnswer.style.display = '';
+      groundingVoiceBtn.style.display = '';
+      nextGroundingBtn.style.display = '';
+      clearGroundingAnswerBtn.style.display = '';
+      groundingVoiceHelper.textContent = '';
+      renderGroundingStep();
+    }
+
+    function finishGrounding() {
+      groundingSuccess.style.display = 'block';
+      addStars(2);
+      groundingStepCounter.textContent = 'Упражнение завершено';
+      groundingProgress.style.width = '100%';
+      groundingTitle.textContent = 'Готово!';
+      groundingHint.textContent = 'Можно пройти ещё раз или посмотреть свои ответы.';
+      groundingAnswer.style.display = 'none';
+      groundingVoiceBtn.style.display = 'none';
+      nextGroundingBtn.style.display = 'none';
+      clearGroundingAnswerBtn.style.display = 'none';
+    }
+
+    nextGroundingBtn.addEventListener('click', () => {
+      const value = groundingAnswer.value.trim();
+      if (!value) { alert('Сначала нужен ответ на этом шаге.'); return; }
+      state.groundingAnswers[groundingIndex] = value;
+      if (groundingIndex < groundingSteps.length - 1) {
+        groundingIndex += 1;
+        renderGroundingStep();
+      } else {
+        finishGrounding();
+      }
+    });
+
+    clearGroundingAnswerBtn.addEventListener('click', () => { groundingAnswer.value = ''; });
+    restartGroundingBtn.addEventListener('click', resetGrounding);
+    reviewGroundingBtn.addEventListener('click', () => {
+      groundingReview.style.display = 'block';
+      groundingReview.innerHTML = '<h2 class="section-title">Мои ответы</h2>' + state.groundingAnswers.map((ans, i) => `<div class="card" style="background:#f8faff; box-shadow:none; margin-bottom:10px;"><strong>${groundingSteps[i].title}</strong><div style="margin-top:6px; color: var(--muted); white-space: pre-wrap;">${escapeHtml(ans)}</div></div>`).join('');
+    });
+
+    groundingVoiceBtn.addEventListener('click', () => {
+      if (voiceState.activeButton === groundingVoiceBtn) { stopVoiceCapture(); return; }
+      startVoiceCapture(groundingAnswer, groundingVoiceBtn, groundingVoiceHelper);
+    });
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    renderGroundingStep();
+
+    const relaxProgress = document.getElementById('relaxProgress');
+    const relaxStepCounter = document.getElementById('relaxStepCounter');
+    const relaxSuccess = document.getElementById('relaxSuccess');
+    const relaxStepsEls = [document.getElementById('relaxStep1'), document.getElementById('relaxStep2'), document.getElementById('relaxStep3'), document.getElementById('relaxStep4')];
+    const relaxBeforeText = document.getElementById('relaxBeforeText');
+    const relaxAfterText = document.getElementById('relaxAfterText');
+    const relaxMoodText = document.getElementById('relaxMoodText');
+    const relaxBeforeVoiceBtn = document.getElementById('relaxBeforeVoiceBtn');
+    const relaxAfterVoiceBtn = document.getElementById('relaxAfterVoiceBtn');
+    const relaxMoodVoiceBtn = document.getElementById('relaxMoodVoiceBtn');
+    const relaxBeforeVoiceHelper = document.getElementById('relaxBeforeVoiceHelper');
+    const relaxAfterVoiceHelper = document.getElementById('relaxAfterVoiceHelper');
+    const relaxMoodVoiceHelper = document.getElementById('relaxMoodVoiceHelper');
+    let relaxStepIndex = 0;
+
+    document.getElementById('relaxToStep2Btn').addEventListener('click', () => {
+      if (!relaxBeforeText.value.trim()) { alert('Сначала напишите, что вы чувствуете в теле.'); return; }
+      setRelaxStep(1);
+    });
+    document.getElementById('relaxBackTo1Btn').addEventListener('click', () => setRelaxStep(0));
+    document.getElementById('relaxToStep3Btn').addEventListener('click', () => setRelaxStep(2));
+    document.getElementById('relaxBackTo2Btn').addEventListener('click', () => setRelaxStep(1));
+    document.getElementById('relaxToStep4Btn').addEventListener('click', () => {
+      if (!relaxAfterText.value.trim()) { alert('Сначала напишите повторную проверку ощущений.'); return; }
+      setRelaxStep(3);
+    });
+    document.getElementById('relaxBackTo3Btn').addEventListener('click', () => setRelaxStep(2));
+    document.getElementById('relaxFinishBtn').addEventListener('click', () => {
+      if (!relaxMoodText.value.trim()) { alert('Сначала напишите про настроение.'); return; }
+      if (!state.relaxDone) {
+        addStars(2);
+        state.relaxDone = true;
+        localStorage.setItem('sr_relaxDoneV2', 'true');
+      }
+      relaxSuccess.style.display = 'block';
+      setTimeout(() => {
+        relaxSuccess.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    });
+
+    function setRelaxStep(index) {
+      relaxStepIndex = index;
+      relaxStepsEls.forEach((el, i) => el.classList.toggle('active', i === index));
+      relaxStepCounter.textContent = `Шаг ${index + 1} из 4`;
+      relaxProgress.style.width = `${((index + 1) / 4) * 100}%`;
+    }
+
+    setRelaxStep(0);
+
+    relaxBeforeVoiceBtn.addEventListener('click', () => {
+      if (voiceState.activeButton === relaxBeforeVoiceBtn) { stopVoiceCapture(); return; }
+      startVoiceCapture(relaxBeforeText, relaxBeforeVoiceBtn, relaxBeforeVoiceHelper);
+    });
+    relaxAfterVoiceBtn.addEventListener('click', () => {
+      if (voiceState.activeButton === relaxAfterVoiceBtn) { stopVoiceCapture(); return; }
+      startVoiceCapture(relaxAfterText, relaxAfterVoiceBtn, relaxAfterVoiceHelper);
+    });
+    relaxMoodVoiceBtn.addEventListener('click', () => {
+      if (voiceState.activeButton === relaxMoodVoiceBtn) { stopVoiceCapture(); return; }
+      startVoiceCapture(relaxMoodText, relaxMoodVoiceBtn, relaxMoodVoiceHelper);
+    });
+
+    const relaxItemsData = [
+      { id: 'face', title: 'Лицо', text: 'Наморщить лоб, зажмурить глаза, сморщить нос, сжать челюсти.' },
+      { id: 'shoulders', title: 'Плечи', text: 'Поднять плечи к ушам и удержать напряжение.' },
+      { id: 'arms', title: 'Руки', text: 'Сжать кулаки и напрячь бицепсы.' },
+      { id: 'back', title: 'Спина и грудь', text: 'Свести лопатки и слегка напрячь грудь.' },
+      { id: 'belly', title: 'Живот', text: 'Напрячь мышцы живота.' },
+      { id: 'legs', title: 'Ноги', text: 'Напрячь бёдра и потянуть носки на себя.' }
+    ];
+
+    const relaxItems = {};
+    const relaxItemsContainer = document.getElementById('relaxItems');
+
+    function initRelaxItems() {
+      relaxItemsContainer.innerHTML = '';
+      for (const item of relaxItemsData) {
+        relaxItems[item.id] = { phase: 'idle', seconds: 0, done: false, canManualComplete: false, timer: null };
+        const wrap = document.createElement('div');
+        wrap.className = 'relax-item';
+        wrap.id = `relax-${item.id}`;
+        wrap.innerHTML = `
+          <div class="relax-item-head">
+            <div>
+              <h4 class="relax-item-title">${item.title}</h4>
+              <div class="relax-item-text">${item.text}</div>
+              <div class="relax-subnote" id="relax-note-${item.id}">Нажмите, чтобы начать.</div>
+            </div>
+            <button class="timer-btn idle" id="relax-btn-${item.id}">Начать</button>
+          </div>
+        `;
+        relaxItemsContainer.appendChild(wrap);
+        document.getElementById(`relax-btn-${item.id}`).addEventListener('click', () => handleRelaxItemClick(item.id));
+      }
+      updateRelaxNextButton();
+    }
+
+    function handleRelaxItemClick(id) {
+      const item = relaxItems[id];
+      if (!item || item.done) return;
+      if (item.phase === 'idle') { startTension(id); return; }
+      if (item.phase === 'tension' && item.seconds <= 5) { startRelease(id); return; }
+      if (item.phase === 'release' && item.canManualComplete) finishRelaxItem(id);
+    }
+
+    function startTension(id) {
+      clearRelaxTimer(id);
+      const item = relaxItems[id];
+      item.phase = 'tension';
+      item.seconds = 10;
+      item.canManualComplete = false;
+      renderRelaxItem(id);
+      item.timer = setInterval(() => {
+        item.seconds -= 1;
+        if (item.seconds <= 0) { startRelease(id); return; }
+        renderRelaxItem(id);
+      }, 1000);
+    }
+
+    function startRelease(id) {
+      clearRelaxTimer(id);
+      const item = relaxItems[id];
+      item.phase = 'release';
+      item.seconds = 20;
+      item.canManualComplete = false;
+      renderRelaxItem(id);
+      item.timer = setInterval(() => {
+        item.seconds -= 1;
+        if (item.seconds <= 5) item.canManualComplete = true;
+        if (item.seconds <= 0) { finishRelaxItem(id); return; }
+        renderRelaxItem(id);
+      }, 1000);
+    }
+
+    function finishRelaxItem(id) {
+      clearRelaxTimer(id);
+      const item = relaxItems[id];
+      item.phase = 'done';
+      item.seconds = 0;
+      item.done = true;
+      item.canManualComplete = false;
+      renderRelaxItem(id);
+      updateRelaxNextButton();
+    }
+
+    function clearRelaxTimer(id) {
+      const item = relaxItems[id];
+      if (item && item.timer) {
+        clearInterval(item.timer);
+        item.timer = null;
+      }
+    }
+
+    function renderRelaxItem(id) {
+      const item = relaxItems[id];
+      const btn = document.getElementById(`relax-btn-${id}`);
+      const note = document.getElementById(`relax-note-${id}`);
+      const wrap = document.getElementById(`relax-${id}`);
+      wrap.classList.toggle('done', item.done);
+      if (item.phase === 'idle') {
+        btn.className = 'timer-btn idle';
+        btn.textContent = 'Начать';
+        note.textContent = 'Нажмите, чтобы начать.';
+      } else if (item.phase === 'tension') {
+        btn.className = 'timer-btn tension';
+        btn.textContent = `Напряжение: ${item.seconds}с`;
+        note.textContent = item.seconds <= 5 ? 'Можно нажать и раньше перейти к расслаблению.' : 'Держим напряжение.';
+      } else if (item.phase === 'release') {
+        btn.className = 'timer-btn release';
+        btn.textContent = `Расслабление: ${item.seconds}с`;
+        note.textContent = item.canManualComplete ? 'Можно нажать и отметить пункт выполненным.' : 'Расслабляемся.';
+      } else {
+        btn.className = 'timer-btn done';
+        btn.textContent = 'Выполнено';
+        note.textContent = 'Пункт завершён.';
+      }
+    }
+
+    function updateRelaxNextButton() {
+      const doneCount = Object.values(relaxItems).filter(x => x.done).length;
+      document.getElementById('relaxToStep3Btn').disabled = doneCount !== relaxItemsData.length;
+    }
+
+    function resetRelaxFlow() {
+      Object.keys(relaxItems).forEach(clearRelaxTimer);
+      initRelaxItems();
+      relaxBeforeText.value = '';
+      relaxAfterText.value = '';
+      relaxMoodText.value = '';
+      relaxBeforeVoiceHelper.textContent = '';
+      relaxAfterVoiceHelper.textContent = '';
+      relaxMoodVoiceHelper.textContent = '';
+      relaxSuccess.style.display = 'none';
+      setRelaxStep(0);
+      state.relaxDone = false;
+    }
+
+    initRelaxItems();
+  </script>
+</body>
+</html>
